@@ -14,8 +14,10 @@
 package metadata
 
 import (
-	log "github.com/sirupsen/logrus"
 	"net/http"
+	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 type statusWriter struct {
@@ -42,11 +44,13 @@ func requestFields(req *http.Request) log.Fields {
 
 func loggingHandler(handler http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, req *http.Request) {
+		requestTimer := time.Now()
 		statusWriter := newStatusWriter(w)
 		handler.ServeHTTP(statusWriter, req)
 		fields := log.Fields{
-			"headers": w.Header(),
-			"status":  statusWriter.statusCode,
+			"headers":  w.Header(),
+			"status":   statusWriter.statusCode,
+			"duration": time.Since(requestTimer),
 		}
 		log.WithFields(requestFields(req)).WithFields(fields).Infof("processed request")
 	})
