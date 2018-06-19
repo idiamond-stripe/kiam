@@ -17,15 +17,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"time"
+
 	"github.com/cenkalti/backoff"
 	"github.com/gorilla/mux"
-	"github.com/rcrowley/go-metrics"
 	log "github.com/sirupsen/logrus"
 	"github.com/uswitch/kiam/pkg/aws/sts"
 	"github.com/uswitch/kiam/pkg/k8s"
 	"github.com/uswitch/kiam/pkg/server"
-	"net/http"
-	"time"
 )
 
 type credentialsHandler struct {
@@ -36,9 +36,8 @@ type credentialsHandler struct {
 }
 
 func (c *credentialsHandler) Handle(ctx context.Context, w http.ResponseWriter, req *http.Request) (int, error) {
-	credentialTimings := metrics.GetOrRegisterTimer("credentialsHandler", metrics.DefaultRegistry)
 	startTime := time.Now()
-	defer credentialTimings.UpdateSince(startTime)
+	defer handlerTimer.WithLabelValues("credentials").Observe(float64(time.Since(startTime) * time.Millisecond))
 
 	err := req.ParseForm()
 	if err != nil {
@@ -52,12 +51,12 @@ func (c *credentialsHandler) Handle(ctx context.Context, w http.ResponseWriter, 
 
 	foundRole, err := findRole(ctx, c.roleFinder, ip)
 	if err != nil {
-		metrics.GetOrRegisterMeter("credentialsHandler.findRoleError", metrics.DefaultRegistry).Mark(1)
+		findRoleError.WithLabelValues("credentials").Inc()
 		return http.StatusInternalServerError, fmt.Errorf("error finding pod for ip %s: %s", ip, err.Error())
 	}
 
 	if foundRole == "" {
-		metrics.GetOrRegisterMeter("credentialsHandler.emptyRole", metrics.DefaultRegistry).Mark(1)
+		emptyRole.WithLabelValues("credentials").Inc()
 		return http.StatusNotFound, EmptyRoleError
 	}
 
@@ -86,7 +85,7 @@ func (c *credentialsHandler) Handle(ctx context.Context, w http.ResponseWriter, 
 	}
 
 	w.Header().Set("Content-Type", "application/json")
-	metrics.GetOrRegisterMeter("credentialsHandler.success", metrics.DefaultRegistry).Mark(1)
+	success.WithLabelValues("credentials").Inc()
 	return http.StatusOK, nil
 }
 

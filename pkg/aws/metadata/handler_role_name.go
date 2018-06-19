@@ -16,10 +16,10 @@ package metadata
 import (
 	"context"
 	"fmt"
-	"github.com/rcrowley/go-metrics"
-	"github.com/uswitch/kiam/pkg/k8s"
 	"net/http"
 	"time"
+
+	"github.com/uswitch/kiam/pkg/k8s"
 )
 
 type roleHandler struct {
@@ -28,9 +28,8 @@ type roleHandler struct {
 }
 
 func (h *roleHandler) Handle(ctx context.Context, w http.ResponseWriter, req *http.Request) (int, error) {
-	roleNameTimings := metrics.GetOrRegisterTimer("roleNameHandler", metrics.DefaultRegistry)
 	startTime := time.Now()
-	defer roleNameTimings.UpdateSince(startTime)
+	defer handlerTimer.WithLabelValues("roleName").Observe(float64(time.Since(startTime) * time.Millisecond))
 
 	err := req.ParseForm()
 	if err != nil {
@@ -44,17 +43,17 @@ func (h *roleHandler) Handle(ctx context.Context, w http.ResponseWriter, req *ht
 
 	role, err := findRole(ctx, h.roleFinder, ip)
 	if err != nil {
-		metrics.GetOrRegisterMeter("roleNameHandler.findRoleError", metrics.DefaultRegistry).Mark(1)
+		findRoleError.WithLabelValues("roleName").Inc()
 		return http.StatusInternalServerError, err
 	}
 
 	if role == "" {
-		metrics.GetOrRegisterMeter("credentialsHandler.emptyRole", metrics.DefaultRegistry).Mark(1)
+		emptyRole.WithLabelValues("roleName").Inc()
 		return http.StatusNotFound, EmptyRoleError
 	}
 
 	fmt.Fprint(w, role)
-	metrics.GetOrRegisterMeter("roleNameHandler.success", metrics.DefaultRegistry).Mark(1)
+	success.WithLabelValues("roleName").Inc()
 
 	return http.StatusOK, nil
 }

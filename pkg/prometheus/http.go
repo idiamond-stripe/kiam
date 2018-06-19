@@ -6,9 +6,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	metrics "github.com/rcrowley/go-metrics"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -51,20 +49,5 @@ func (s *TelemetryServer) Listen(ctx context.Context) {
 
 		log.Infof("stopping prometheus metric listener")
 		s.server.Shutdown(ctx)
-	}()
-	go func() {
-		prom := NewPrometheusSyncer(metrics.DefaultRegistry, s.subsystem, prometheus.DefaultRegisterer)
-		refreshCounter := metrics.GetOrRegisterCounter("metrics_refresh", metrics.DefaultRegistry)
-
-		for {
-			select {
-			case _ = <-time.Tick(s.sync):
-				prom.Sync()
-				refreshCounter.Inc(1)
-
-			case _ = <-ctx.Done():
-				return
-			}
-		}
 	}()
 }
