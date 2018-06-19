@@ -44,7 +44,7 @@ func DefaultGateway(assumeRoleArn string) *DefaultSTSGateway {
 
 func (g *DefaultSTSGateway) Issue(ctx context.Context, roleARN, sessionName string, expiry time.Duration) (*Credentials, error) {
 	startTime := time.Now()
-	defer assumeRole.Observe(float64(time.Since(startTime) * time.Millisecond))
+	defer assumeRole.Observe(float64(time.Since(startTime) / time.Millisecond))
 
 	assumeRoleExecuting.Inc()
 	defer assumeRoleExecuting.Dec()

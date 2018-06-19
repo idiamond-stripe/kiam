@@ -33,28 +33,28 @@ func ClientWithTelemetry(client pb.KiamServiceClient) pb.KiamServiceClient {
 
 func (c *TelemetryClient) GetPodRole(ctx context.Context, in *pb.GetPodRoleRequest, opts ...grpc.CallOption) (*pb.Role, error) {
 	startTime := time.Now()
-	defer rpcTimer.With(prometheus.Labels{"rpc": "GetPodRole", "type": "client"}).Observe(float64(time.Since(startTime) * time.Millisecond))
+	defer rpcTimer.With(prometheus.Labels{"rpc": "GetPodRole", "type": "client"}).Observe(float64(time.Since(startTime) / time.Millisecond))
 
 	return c.client.GetPodRole(ctx, in, opts...)
 }
 
 func (c *TelemetryClient) GetRoleCredentials(ctx context.Context, in *pb.GetRoleCredentialsRequest, opts ...grpc.CallOption) (*pb.Credentials, error) {
 	startTime := time.Now()
-	defer rpcTimer.With(prometheus.Labels{"rpc": "GetRoleCredentials", "type": "client"}).Observe(float64(time.Since(startTime) * time.Millisecond))
+	defer rpcTimer.With(prometheus.Labels{"rpc": "GetRoleCredentials", "type": "client"}).Observe(float64(time.Since(startTime) / time.Millisecond))
 
 	return c.client.GetRoleCredentials(ctx, in, opts...)
 }
 
 func (c *TelemetryClient) GetHealth(ctx context.Context, in *pb.GetHealthRequest, opts ...grpc.CallOption) (*pb.HealthStatus, error) {
 	startTime := time.Now()
-	defer rpcTimer.With(prometheus.Labels{"rpc": "GetHealth", "type": "client"}).Observe(float64(time.Since(startTime) * time.Millisecond))
+	defer rpcTimer.With(prometheus.Labels{"rpc": "GetHealth", "type": "client"}).Observe(float64(time.Since(startTime) / time.Millisecond))
 
 	return c.client.GetHealth(ctx, in, opts...)
 }
 
 func (c *TelemetryClient) IsAllowedAssumeRole(ctx context.Context, in *pb.IsAllowedAssumeRoleRequest, opts ...grpc.CallOption) (*pb.IsAllowedAssumeRoleResponse, error) {
 	startTime := time.Now()
-	defer rpcTimer.With(prometheus.Labels{"rpc": "IsAllowedAssumeRole", "type": "client"}).Observe(float64(time.Since(startTime) * time.Millisecond))
+	defer rpcTimer.With(prometheus.Labels{"rpc": "IsAllowedAssumeRole", "type": "client"}).Observe(float64(time.Since(startTime) / time.Millisecond))
 
 	return c.client.IsAllowedAssumeRole(ctx, in, opts...)
 }
@@ -70,28 +70,28 @@ func ServerWithTelemetry(server pb.KiamServiceServer) pb.KiamServiceServer {
 
 func (c *TelemetryServer) IsAllowedAssumeRole(ctx context.Context, in *pb.IsAllowedAssumeRoleRequest) (*pb.IsAllowedAssumeRoleResponse, error) {
 	startTime := time.Now()
-	defer rpcTimer.With(prometheus.Labels{"rpc": "IsAllowedAssumeRole", "type": "server"}).Observe(float64(time.Since(startTime) * time.Millisecond))
+	defer rpcTimer.With(prometheus.Labels{"rpc": "IsAllowedAssumeRole", "type": "server"}).Observe(float64(time.Since(startTime) / time.Millisecond))
 
 	return c.server.IsAllowedAssumeRole(ctx, in)
 }
 
 func (c *TelemetryServer) GetPodRole(ctx context.Context, in *pb.GetPodRoleRequest) (*pb.Role, error) {
 	startTime := time.Now()
-	defer rpcTimer.With(prometheus.Labels{"rpc": "GetPodRole", "type": "server"}).Observe(float64(time.Since(startTime) * time.Millisecond))
+	defer rpcTimer.With(prometheus.Labels{"rpc": "GetPodRole", "type": "server"}).Observe(float64(time.Since(startTime) / time.Millisecond))
 
 	return c.server.GetPodRole(ctx, in)
 }
 
 func (c *TelemetryServer) GetRoleCredentials(ctx context.Context, in *pb.GetRoleCredentialsRequest) (*pb.Credentials, error) {
 	startTime := time.Now()
-	defer rpcTimer.With(prometheus.Labels{"rpc": "GetRoleCredentials", "type": "server"}).Observe(float64(time.Since(startTime) * time.Millisecond))
+	defer rpcTimer.With(prometheus.Labels{"rpc": "GetRoleCredentials", "type": "server"}).Observe(float64(time.Since(startTime) / time.Millisecond))
 
 	return c.server.GetRoleCredentials(ctx, in)
 }
 
 func (c *TelemetryServer) GetHealth(ctx context.Context, in *pb.GetHealthRequest) (*pb.HealthStatus, error) {
 	startTime := time.Now()
-	defer rpcTimer.With(prometheus.Labels{"rpc": "GetHealth", "type": "server"}).Observe(float64(time.Since(startTime) * time.Millisecond))
+	defer rpcTimer.With(prometheus.Labels{"rpc": "GetHealth", "type": "server"}).Observe(float64(time.Since(startTime) / time.Millisecond))
 
 	return c.server.GetHealth(ctx, in)
 }

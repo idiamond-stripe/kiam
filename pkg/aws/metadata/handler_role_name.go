@@ -29,7 +29,7 @@ type roleHandler struct {
 
 func (h *roleHandler) Handle(ctx context.Context, w http.ResponseWriter, req *http.Request) (int, error) {
 	startTime := time.Now()
-	defer handlerTimer.WithLabelValues("roleName").Observe(float64(time.Since(startTime) * time.Millisecond))
+	defer handlerTimer.WithLabelValues("roleName").Observe(float64(time.Since(startTime) / time.Millisecond))
 
 	err := req.ParseForm()
 	if err != nil {
