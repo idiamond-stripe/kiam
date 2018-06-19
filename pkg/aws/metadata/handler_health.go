@@ -27,7 +27,7 @@ type healthHandler struct {
 
 func (h *healthHandler) Handle(ctx context.Context, w http.ResponseWriter, req *http.Request) (int, error) {
 	startTime := time.Now()
-	defer handlerTimer.WithLabelValues("health").Observe(float64(time.Since(startTime) * time.Millisecond))
+	defer handlerTimer.WithLabelValues("health").Observe(float64(time.Since(startTime) / time.Millisecond))
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/latest/meta-data/instance-id", h.endpoint), nil)
 	if err != nil {

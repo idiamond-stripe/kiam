@@ -50,7 +50,7 @@ func loggingHandler(handler http.Handler) http.Handler {
 		fields := log.Fields{
 			"headers":  w.Header(),
 			"status":   statusWriter.statusCode,
-			"duration": time.Since(requestTimer),
+			"duration": float64(time.Since(requestTimer) / time.Millisecond),
 		}
 		log.WithFields(requestFields(req)).WithFields(fields).Infof("processed request")
 	})
