@@ -37,7 +37,7 @@ type credentialsHandler struct {
 
 func (c *credentialsHandler) Handle(ctx context.Context, w http.ResponseWriter, req *http.Request) (int, error) {
 	startTime := time.Now()
-	defer log.Warnf("Observing request at: %f ms", float64(time.Since(startTime)/time.Millisecond))
+	defer log.Warnf("Observing request at: %f ms", float64(time.Since(startTime)))
 	defer handlerTimer.WithLabelValues("credentials").Observe(float64(time.Since(startTime) / time.Millisecond))
 
 	err := req.ParseForm()
