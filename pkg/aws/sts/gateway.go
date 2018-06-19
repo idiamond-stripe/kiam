@@ -21,6 +21,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/credentials/stscreds"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/sts"
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 type STSGateway interface {
@@ -43,8 +44,8 @@ func DefaultGateway(assumeRoleArn string) *DefaultSTSGateway {
 }
 
 func (g *DefaultSTSGateway) Issue(ctx context.Context, roleARN, sessionName string, expiry time.Duration) (*Credentials, error) {
-	startTime := time.Now()
-	defer assumeRole.Observe(float64(time.Since(startTime) / time.Millisecond))
+	timer := prometheus.NewTimer(assumeRole)
+	defer timer.ObserveDuration()
 
 	assumeRoleExecuting.Inc()
 	defer assumeRoleExecuting.Dec()

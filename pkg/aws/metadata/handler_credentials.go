@@ -18,10 +18,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"time"
 
 	"github.com/cenkalti/backoff"
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus"
 	log "github.com/sirupsen/logrus"
 	"github.com/uswitch/kiam/pkg/aws/sts"
 	"github.com/uswitch/kiam/pkg/k8s"
@@ -36,9 +36,8 @@ type credentialsHandler struct {
 }
 
 func (c *credentialsHandler) Handle(ctx context.Context, w http.ResponseWriter, req *http.Request) (int, error) {
-	startTime := time.Now()
-	defer log.Warnf("Observing request at: %f ms", float64(time.Since(startTime)))
-	defer handlerTimer.WithLabelValues("credentials").Observe(float64(time.Since(startTime) / time.Millisecond))
+	timer := prometheus.NewTimer(handlerTimer.WithLabelValues("credentials"))
+	defer timer.ObserveDuration()
 
 	err := req.ParseForm()
 	if err != nil {

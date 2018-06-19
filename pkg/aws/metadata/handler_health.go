@@ -18,7 +18,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"time"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
 
 type healthHandler struct {
@@ -26,8 +27,8 @@ type healthHandler struct {
 }
 
 func (h *healthHandler) Handle(ctx context.Context, w http.ResponseWriter, req *http.Request) (int, error) {
-	startTime := time.Now()
-	defer handlerTimer.WithLabelValues("health").Observe(float64(time.Since(startTime) / time.Millisecond))
+	timer := prometheus.NewTimer(handlerTimer.WithLabelValues("health"))
+	defer timer.ObserveDuration()
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/latest/meta-data/instance-id", h.endpoint), nil)
 	if err != nil {

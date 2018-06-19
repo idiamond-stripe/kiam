@@ -17,8 +17,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"time"
 
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/uswitch/kiam/pkg/k8s"
 )
 
@@ -28,8 +28,8 @@ type roleHandler struct {
 }
 
 func (h *roleHandler) Handle(ctx context.Context, w http.ResponseWriter, req *http.Request) (int, error) {
-	startTime := time.Now()
-	defer handlerTimer.WithLabelValues("roleName").Observe(float64(time.Since(startTime) / time.Millisecond))
+	timer := prometheus.NewTimer(handlerTimer.WithLabelValues("roleName"))
+	defer timer.ObserveDuration()
 
 	err := req.ParseForm()
 	if err != nil {
