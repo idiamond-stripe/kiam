@@ -38,7 +38,7 @@ var (
 			Help:      "Bucketed histogram of assumeRole timings",
 
 			// 1ms to 5min
-			Buckets: prometheus.ExponentialBuckets(1, 2, 13),
+			Buckets: prometheus.ExponentialBuckets(.001, 2, 13),
 		},
 	)
 

@@ -13,7 +13,7 @@ var (
 			Help:      "Bucketed histogram of rpc call timings",
 
 			// 1ms to 5min
-			Buckets: prometheus.ExponentialBuckets(1, 2, 13),
+			Buckets: prometheus.ExponentialBuckets(.001, 2, 13),
 		},
 		[]string{"rpc", "type"},
 	)
