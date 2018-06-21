@@ -9,7 +9,7 @@ var (
 		prometheus.HistogramOpts{
 			Namespace: "kiam",
 			Subsystem: "server",
-			Name:      "rpc",
+			Name:      "rpcTiming",
 			Help:      "Bucketed histogram of rpc call timings",
 
 			// 1ms to 5min

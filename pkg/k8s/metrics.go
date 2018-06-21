@@ -9,7 +9,7 @@ var (
 		prometheus.CounterOpts{
 			Namespace: "kiam",
 			Subsystem: "k8s",
-			Name:      "handler",
+			Name:      "droppedPods",
 			Help:      "Dropped pods because of full cache",
 		},
 	)

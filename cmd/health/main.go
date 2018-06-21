@@ -15,11 +15,12 @@ package main
 
 import (
 	"context"
+	"time"
+
 	"github.com/cenkalti/backoff"
 	log "github.com/sirupsen/logrus"
 	kiamserver "github.com/uswitch/kiam/pkg/server"
 	"gopkg.in/alecthomas/kingpin.v2"
-	"time"
 )
 
 type options struct {

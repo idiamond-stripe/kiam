@@ -7,7 +7,7 @@ var (
 		prometheus.CounterOpts{
 			Namespace: "kiam",
 			Subsystem: "sts",
-			Name:      "cacheHit",
+			Name:      "cacheHitCount",
 			Help:      "Number of cache hits to the metadata cache",
 		},
 	)
@@ -16,7 +16,7 @@ var (
 		prometheus.CounterOpts{
 			Namespace: "kiam",
 			Subsystem: "sts",
-			Name:      "cacheMiss",
+			Name:      "cacheMissCount",
 			Help:      "Number of cache misses to the metadata cache",
 		},
 	)
@@ -25,8 +25,8 @@ var (
 		prometheus.CounterOpts{
 			Namespace: "kiam",
 			Subsystem: "sts",
-			Name:      "errorIssuing",
-			Help:      "Error issuing credentials",
+			Name:      "errorIssuingCount",
+			Help:      "Number of errors issuing credentials",
 		},
 	)
 
@@ -34,7 +34,7 @@ var (
 		prometheus.HistogramOpts{
 			Namespace: "kiam",
 			Subsystem: "sts",
-			Name:      "assumeRole",
+			Name:      "assumeRoleTiming",
 			Help:      "Bucketed histogram of assumeRole timings",
 
 			// 1ms to 5min
@@ -46,7 +46,7 @@ var (
 		prometheus.GaugeOpts{
 			Namespace: "kiam",
 			Subsystem: "sts",
-			Name:      "assumeRoleExecuting",
+			Name:      "assumeRoleExecutingCount",
 			Help:      "Number of assume role calls currently executing",
 		},
 	)

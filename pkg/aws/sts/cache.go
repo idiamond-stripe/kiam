@@ -67,7 +67,7 @@ func DefaultCache(
 		prometheus.CounterOpts{
 			Namespace: "kiam",
 			Subsystem: "sts",
-			Name:      "size",
+			Name:      "cacheSize",
 			Help:      "Current size of the metadata cache",
 		},
 		func() float64 { return float64(c.cache.ItemCount()) },

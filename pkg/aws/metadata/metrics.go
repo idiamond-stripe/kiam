@@ -9,7 +9,7 @@ var (
 		prometheus.HistogramOpts{
 			Namespace: "kiam",
 			Subsystem: "metadata",
-			Name:      "handler",
+			Name:      "handlerTiming",
 			Help:      "Bucketed histogram of handler timings",
 
 			// 1ms to 5min
@@ -22,7 +22,7 @@ var (
 		prometheus.CounterOpts{
 			Namespace: "kiam",
 			Subsystem: "metadata",
-			Name:      "findRoleError",
+			Name:      "findRoleErrorCount",
 			Help:      "Number of errors finding the role for a pod",
 		},
 		[]string{"handler"},
@@ -32,7 +32,7 @@ var (
 		prometheus.CounterOpts{
 			Namespace: "kiam",
 			Subsystem: "metadata",
-			Name:      "emptyRole",
+			Name:      "emptyRoleCount",
 			Help:      "Number of empty roles returned",
 		},
 		[]string{"handler"},
@@ -42,7 +42,7 @@ var (
 		prometheus.CounterOpts{
 			Namespace: "kiam",
 			Subsystem: "metadata",
-			Name:      "success",
+			Name:      "successCount",
 			Help:      "Number of successful responses from a handler",
 		},
 		[]string{"handler"},
@@ -52,7 +52,7 @@ var (
 		prometheus.CounterOpts{
 			Namespace: "kiam",
 			Subsystem: "metadata",
-			Name:      "responses",
+			Name:      "responsesCount",
 			Help:      "Responses from mocked out metadata handlers",
 		},
 		[]string{"handler", "code"},
