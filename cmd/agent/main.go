@@ -15,18 +15,16 @@ package main
 
 import (
 	"context"
-	"net"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/pubnub/go-metrics-statsd"
-	"github.com/rcrowley/go-metrics"
 	log "github.com/sirupsen/logrus"
 	http "github.com/uswitch/kiam/pkg/aws/metadata"
 	"github.com/uswitch/kiam/pkg/prometheus"
 	kiamserver "github.com/uswitch/kiam/pkg/server"
+	"github.com/uswitch/kiam/pkg/statsd"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -36,6 +34,7 @@ type options struct {
 	port                 int
 	allowIPQuery         bool
 	statsD               string
+	statsDPrefix         string
 	statsDInterval       time.Duration
 	iptables             bool
 	hostIP               string
@@ -78,7 +77,8 @@ func main() {
 	kingpin.Flag("allow-ip-query", "Allow client IP to be specified with ?ip. Development use only.").Default("false").BoolVar(&opts.allowIPQuery)
 
 	kingpin.Flag("statsd", "UDP address to publish StatsD metrics. e.g. 127.0.0.1:8125").Default("").StringVar(&opts.statsD)
-	kingpin.Flag("statsd-interval", "Interval to publish to StatsD").Default("10s").DurationVar(&opts.statsDInterval)
+	kingpin.Flag("statsd-prefix", "statsd namespace to use").Default("kiam.agent").StringVar(&opts.statsDPrefix)
+	kingpin.Flag("statsd-interval", "Interval to publish to StatsD").Default("100ms").DurationVar(&opts.statsDInterval)
 
 	kingpin.Flag("iptables", "Add IPTables rules").Default("false").BoolVar(&opts.iptables)
 	kingpin.Flag("host", "Host IP address.").Envar("HOST_IP").Required().StringVar(&opts.hostIP)
@@ -109,11 +109,10 @@ func main() {
 	}
 
 	if opts.statsD != "" {
-		addr, err := net.ResolveUDPAddr("udp", opts.statsD)
+		err := statsd.New(opts.statsD, opts.statsDPrefix, opts.statsDInterval)
 		if err != nil {
-			log.Fatal("error parsing statsd address:", err.Error())
+			log.Fatalf("Error initing statsd: %v", err)
 		}
-		go statsd.StatsD(metrics.DefaultRegistry, opts.statsDInterval, "kiam.agent", addr)
 	}
 
 	ctx, cancel := context.WithCancel(context.Background())

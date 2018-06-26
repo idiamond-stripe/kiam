@@ -15,18 +15,16 @@ package main
 
 import (
 	"context"
-	"net"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"github.com/pubnub/go-metrics-statsd"
-	"github.com/rcrowley/go-metrics"
 	log "github.com/sirupsen/logrus"
 	"github.com/uswitch/kiam/pkg/aws/sts"
 	"github.com/uswitch/kiam/pkg/prometheus"
 	serv "github.com/uswitch/kiam/pkg/server"
+	"github.com/uswitch/kiam/pkg/statsd"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -35,8 +33,9 @@ func main() {
 	var flags struct {
 		jsonLog          bool
 		logLevel         string
-		statsd           string
-		statsdInterval   time.Duration
+		statsD           string
+		statsDPrefix     string
+		statsDInterval   time.Duration
 		prometheusListen string
 		prometheusSync   time.Duration
 	}
@@ -44,8 +43,9 @@ func main() {
 	kingpin.Flag("json-log", "Output log in JSON").BoolVar(&flags.jsonLog)
 	kingpin.Flag("level", "Log level: debug, info, warn, error.").Default("info").EnumVar(&flags.logLevel, "debug", "info", "warn", "error")
 
-	kingpin.Flag("statsd", "UDP address to publish StatsD metrics. e.g. 127.0.0.1:8125").Default("").StringVar(&flags.statsd)
-	kingpin.Flag("statsd-interval", "Interval to publish to StatsD").Default("10s").DurationVar(&flags.statsdInterval)
+	kingpin.Flag("statsd", "UDP address to publish StatsD metrics. e.g. 127.0.0.1:8125").Default("").StringVar(&flags.statsD)
+	kingpin.Flag("statsd-prefix", "statsd namespace to use").Default("kiam.server").StringVar(&flags.statsDPrefix)
+	kingpin.Flag("statsd-interval", "Interval to publish to StatsD").Default("100ms").DurationVar(&flags.statsDInterval)
 
 	kingpin.Flag("fetchers", "Number of parallel fetcher go routines").Default("8").IntVar(&serverConfig.ParallelFetcherProcesses)
 	kingpin.Flag("prefetch-buffer-size", "How many Pod events to hold in memory between the Pod watcher and Prefetch manager.").Default("1000").IntVar(&serverConfig.PrefetchBufferSize)
@@ -93,12 +93,11 @@ func main() {
 
 	ctx, cancel := context.WithCancel(context.Background())
 
-	if flags.statsd != "" {
-		addr, err := net.ResolveUDPAddr("udp", flags.statsd)
+	if flags.statsD != "" {
+		err := statsd.New(flags.statsD, flags.statsDPrefix, flags.statsDInterval)
 		if err != nil {
-			log.Fatal("error parsing statsd address:", err.Error())
+			log.Fatalf("Error initing statsd: %v", err)
 		}
-		go statsd.StatsD(metrics.DefaultRegistry, flags.statsdInterval, "kiam.server", addr)
 	}
 
 	if flags.prometheusListen != "" {

@@ -17,6 +17,7 @@ import (
 	"context"
 
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/uswitch/kiam/pkg/statsd"
 	pb "github.com/uswitch/kiam/proto"
 	grpc "google.golang.org/grpc"
 )
@@ -33,6 +34,7 @@ func ClientWithTelemetry(client pb.KiamServiceClient) pb.KiamServiceClient {
 func (c *TelemetryClient) GetPodRole(ctx context.Context, in *pb.GetPodRoleRequest, opts ...grpc.CallOption) (*pb.Role, error) {
 	timer := prometheus.NewTimer(rpcTimer.With(prometheus.Labels{"rpc": "GetPodRole", "type": "client"}))
 	defer timer.ObserveDuration()
+	defer statsd.Client.NewTiming().Send("client.rpc.GetPodRole")
 
 	return c.client.GetPodRole(ctx, in, opts...)
 }
@@ -40,6 +42,7 @@ func (c *TelemetryClient) GetPodRole(ctx context.Context, in *pb.GetPodRoleReque
 func (c *TelemetryClient) GetRoleCredentials(ctx context.Context, in *pb.GetRoleCredentialsRequest, opts ...grpc.CallOption) (*pb.Credentials, error) {
 	timer := prometheus.NewTimer(rpcTimer.With(prometheus.Labels{"rpc": "GetRoleCredentials", "type": "client"}))
 	defer timer.ObserveDuration()
+	defer statsd.Client.NewTiming().Send("client.rpc.GetRoleCredentials")
 
 	return c.client.GetRoleCredentials(ctx, in, opts...)
 }
@@ -47,6 +50,7 @@ func (c *TelemetryClient) GetRoleCredentials(ctx context.Context, in *pb.GetRole
 func (c *TelemetryClient) GetHealth(ctx context.Context, in *pb.GetHealthRequest, opts ...grpc.CallOption) (*pb.HealthStatus, error) {
 	timer := prometheus.NewTimer(rpcTimer.With(prometheus.Labels{"rpc": "GetHealth", "type": "client"}))
 	defer timer.ObserveDuration()
+	defer statsd.Client.NewTiming().Send("client.rpc.GetHealth")
 
 	return c.client.GetHealth(ctx, in, opts...)
 }
@@ -54,6 +58,7 @@ func (c *TelemetryClient) GetHealth(ctx context.Context, in *pb.GetHealthRequest
 func (c *TelemetryClient) IsAllowedAssumeRole(ctx context.Context, in *pb.IsAllowedAssumeRoleRequest, opts ...grpc.CallOption) (*pb.IsAllowedAssumeRoleResponse, error) {
 	timer := prometheus.NewTimer(rpcTimer.With(prometheus.Labels{"rpc": "IsAllowedAssumeRole", "type": "client"}))
 	defer timer.ObserveDuration()
+	defer statsd.Client.NewTiming().Send("client.rpc.IsAllowedAssumeRole")
 
 	return c.client.IsAllowedAssumeRole(ctx, in, opts...)
 }
@@ -70,6 +75,7 @@ func ServerWithTelemetry(server pb.KiamServiceServer) pb.KiamServiceServer {
 func (c *TelemetryServer) IsAllowedAssumeRole(ctx context.Context, in *pb.IsAllowedAssumeRoleRequest) (*pb.IsAllowedAssumeRoleResponse, error) {
 	timer := prometheus.NewTimer(rpcTimer.With(prometheus.Labels{"rpc": "IsAllowedAssumeRole", "type": "server"}))
 	defer timer.ObserveDuration()
+	defer statsd.Client.NewTiming().Send("server.rpc.IsAllowedAssumeRole")
 
 	return c.server.IsAllowedAssumeRole(ctx, in)
 }
@@ -77,6 +83,7 @@ func (c *TelemetryServer) IsAllowedAssumeRole(ctx context.Context, in *pb.IsAllo
 func (c *TelemetryServer) GetPodRole(ctx context.Context, in *pb.GetPodRoleRequest) (*pb.Role, error) {
 	timer := prometheus.NewTimer(rpcTimer.With(prometheus.Labels{"rpc": "GetPodRole", "type": "server"}))
 	defer timer.ObserveDuration()
+	defer statsd.Client.NewTiming().Send("server.rpc.GetPodRole")
 
 	return c.server.GetPodRole(ctx, in)
 }
@@ -84,6 +91,7 @@ func (c *TelemetryServer) GetPodRole(ctx context.Context, in *pb.GetPodRoleReque
 func (c *TelemetryServer) GetRoleCredentials(ctx context.Context, in *pb.GetRoleCredentialsRequest) (*pb.Credentials, error) {
 	timer := prometheus.NewTimer(rpcTimer.With(prometheus.Labels{"rpc": "GetRoleCredentials", "type": "server"}))
 	defer timer.ObserveDuration()
+	defer statsd.Client.NewTiming().Send("server.rpc.GetRoleCredentials")
 
 	return c.server.GetRoleCredentials(ctx, in)
 }
@@ -91,6 +99,7 @@ func (c *TelemetryServer) GetRoleCredentials(ctx context.Context, in *pb.GetRole
 func (c *TelemetryServer) GetHealth(ctx context.Context, in *pb.GetHealthRequest) (*pb.HealthStatus, error) {
 	timer := prometheus.NewTimer(rpcTimer.With(prometheus.Labels{"rpc": "GetHealth", "type": "server"}))
 	defer timer.ObserveDuration()
+	defer statsd.Client.NewTiming().Send("server.rpc.GetHealth")
 
 	return c.server.GetHealth(ctx, in)
 }

@@ -26,6 +26,7 @@ import (
 	"github.com/uswitch/kiam/pkg/aws/sts"
 	"github.com/uswitch/kiam/pkg/k8s"
 	"github.com/uswitch/kiam/pkg/server"
+	"github.com/uswitch/kiam/pkg/statsd"
 )
 
 type credentialsHandler struct {
@@ -38,6 +39,7 @@ type credentialsHandler struct {
 func (c *credentialsHandler) Handle(ctx context.Context, w http.ResponseWriter, req *http.Request) (int, error) {
 	timer := prometheus.NewTimer(handlerTimer.WithLabelValues("credentials"))
 	defer timer.ObserveDuration()
+	defer statsd.Client.NewTiming().Send("handler.credentials")
 
 	err := req.ParseForm()
 	if err != nil {

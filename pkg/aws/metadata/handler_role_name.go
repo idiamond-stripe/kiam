@@ -20,6 +20,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/uswitch/kiam/pkg/k8s"
+	"github.com/uswitch/kiam/pkg/statsd"
 )
 
 type roleHandler struct {
@@ -30,6 +31,7 @@ type roleHandler struct {
 func (h *roleHandler) Handle(ctx context.Context, w http.ResponseWriter, req *http.Request) (int, error) {
 	timer := prometheus.NewTimer(handlerTimer.WithLabelValues("roleName"))
 	defer timer.ObserveDuration()
+	defer statsd.Client.NewTiming().Send("handler.role_name")
 
 	err := req.ParseForm()
 	if err != nil {

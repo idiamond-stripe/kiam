@@ -387,6 +387,12 @@
   version = "v2.2.6"
 
 [[projects]]
+  name = "gopkg.in/alexcesaro/statsd.v2"
+  packages = ["."]
+  revision = "7fea3f0d2fab1ad973e641e51dba45443a311a90"
+  version = "v2.0.0"
+
+[[projects]]
   name = "gopkg.in/inf.v0"
   packages = ["."]
   revision = "d2d2541c53f18d2a059457998ce2876cc8e67cbf"
@@ -542,6 +548,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "60284bee3d610b09214a88bbe48f811a7918d2bc585242b78c399cc8cc0b1b9f"
+  inputs-digest = "7c195c4db32ee9f07865e8129061ca3fb7c73ffa3096ce32a8ae46889e7a8d59"
   solver-name = "gps-cdcl"
   solver-version = 1
